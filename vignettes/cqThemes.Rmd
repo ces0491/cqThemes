@@ -16,6 +16,8 @@ vignette: >
 ---
 
 ```{r, include = FALSE}
+library(magrittr)
+
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
@@ -353,7 +355,7 @@ use_revealjs_theme()
 
 ## Contact
 
-For bug reports or feature requests, please file an issue on GitHub: [https://github.com/username/cqThemes/issues](https://github.com/username/cqThemes/issues)
+For bug reports or feature requests, please file an issue on GitHub: [https://github.com/ces0491/cqThemes/issues](https://github.com/username/cqThemes/issues)
 
 # Conclusion
 

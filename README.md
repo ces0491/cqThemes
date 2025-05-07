@@ -29,7 +29,7 @@ You can install the package from GitHub:
 # install.packages("devtools")
 
 # Install cqThemes from GitHub
-devtools::install_github("username/cqThemes")
+devtools::install_github("ces0491/cqThemes")
 ```
 
 ## Basic Usage
