@@ -1,0 +1,38 @@
+Package: cqThemes
+Title: Ces Quarto Themes - Custom Themes for Quarto and R Markdown Documents
+Version: 0.1.0
+Authors@R: 
+    person("Cesaire", "Tobias", email = "cesaire@sheetsolved.com", role = c("aut", "cre"),
+           comment = c(ORCID = "0000-0000-0000-0000"))
+Description: Provides consistent formatting, themes, and styling functions for
+    different document types created with R Markdown or Quarto. Includes custom
+    themes for PDF reports, HTML documents, and revealjs presentations. Features
+    coordinated color palettes, responsive layouts, and helper functions for table
+    formatting with various backends including 'kableExtra' for PDF and 'DT' for
+    HTML. Also provides integration with both 'ggplot2' and 'plotly' for static
+    and interactive visualizations.
+License: MIT + file LICENSE
+Encoding: UTF-8
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.3.2
+Imports: 
+    ggplot2,
+    plotly,
+    knitr,
+    kableExtra,
+    DT,
+    dplyr,
+    viridis,
+    scales,
+    htmltools,
+    rmarkdown,
+    corrplot,
+    tibble
+Suggests:
+    testthat (>= 3.0.0),
+    shiny,
+    flexdashboard,
+    bookdown,
+    quarto
+Config/testthat/edition: 3
+VignetteBuilder: knitr

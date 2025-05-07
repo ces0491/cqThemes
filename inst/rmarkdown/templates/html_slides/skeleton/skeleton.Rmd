@@ -1,0 +1,276 @@
+---
+title: "Statistical Presentation with cqThemes"
+subtitle: "Created with the cqThemes Package"
+author: "Your Name"
+institute: "Your Organization"
+date: "`r Sys.Date()`"
+format:
+  revealjs:
+    theme: [default, custom.scss]
+    slide-number: true
+    navigation-mode: vertical
+    controls-layout: bottom-right
+    controls-tutorial: true
+    smaller: false
+    highlight-style: github
+    code-fold: true
+    code-summary: "Show code"
+    incremental: true
+    transition: slide
+    background-transition: fade
+    preview-links: auto
+    logo: "https://example.com/your-logo.png"
+    footer: "Created with cqThemes | Your Organization"
+---
+
+```{r setup, include=FALSE}
+# Load the cqThemes package
+library(cqThemes)
+
+# Apply the RevealJS theme
+use_revealjs_theme(seed = 9104, interactive = FALSE)
+
+# Load additional packages for the demo
+library(ggplot2)
+library(dplyr)
+```
+
+# Introduction
+
+## About This Template
+
+This presentation template demonstrates the cqThemes RevealJS styling:
+
+- Clean, professional design
+- Consistent plot styling with `theme_cq_revealjs()`
+- Coordinated color palettes with `cq_colors()`
+- Presentation-optimized tables with `format_table_reveal()`
+
+## Data Overview
+
+This presentation uses the built-in `mtcars` dataset:
+
+```{r}
+# Create a summary table
+mtcars_summary <- mtcars %>%
+  group_by(cyl) %>%
+  summarize(
+    Count = n(),
+    `Avg MPG` = mean(mpg),
+    `Avg HP` = mean(hp),
+    `Avg Weight` = mean(wt),
+    .groups = "drop"
+  )
+
+# Format table with cqThemes
+format_table_reveal(
+  mtcars_summary,
+  caption = "Summary by Cylinder Count",
+  digits = 1,
+  highlight_row = 2
+)
+```
+
+# Key Visualizations
+
+## MPG vs. Horsepower
+
+```{r fig.width=10, fig.height=6}
+# Create a boxplot with the cqThemes revealjs theme
+ggplot(mtcars, aes(x = factor(cyl), y = mpg, fill = factor(cyl))) +
+  geom_boxplot(alpha = 0.8) +
+  labs(
+    title = "Distribution of MPG by Cylinder Count",
+    x = "Number of Cylinders",
+    y = "Miles per Gallon"
+  ) +
+  theme_cq_revealjs() +
+  scale_fill_manual(values = cq_colors(3, type = "categorical")) +
+  theme(legend.position = "none")
+```
+
+## Comparison: Automatic vs. Manual Transmission
+
+```{r fig.width=10, fig.height=6}
+# Prepare data for visualization
+car_summary <- mtcars %>%
+  group_by(am, cyl) %>%
+  summarize(
+    count = n(),
+    avg_mpg = mean(mpg),
+    avg_hp = mean(hp),
+    avg_wt = mean(wt),
+    .groups = "drop"
+  ) %>%
+  mutate(
+    am = factor(am, labels = c("Automatic", "Manual")),
+    cyl = factor(cyl)
+  )
+
+# Create a bar chart
+ggplot(car_summary, aes(x = cyl, y = avg_mpg, fill = am)) +
+  geom_bar(stat = "identity", position = "dodge", alpha = 0.8) +
+  geom_text(
+    aes(label = round(avg_mpg, 1)),
+    position = position_dodge(width = 0.9),
+    vjust = -0.5,
+    size = 5
+  ) +
+  labs(
+    title = "Average MPG by Cylinder Count and Transmission",
+    x = "Number of Cylinders",
+    y = "Average Miles per Gallon",
+    fill = "Transmission"
+  ) +
+  theme_cq_revealjs() +
+  scale_fill_manual(values = cq_colors(2))
+```
+
+# Statistical Analysis
+
+## Correlation Analysis
+
+```{r fig.width=10, fig.height=6}
+# Create a correlation matrix
+cor_matrix <- cor(mtcars[, c("mpg", "disp", "hp", "drat", "wt", "qsec")])
+
+# Create a correlation plot using cqThemes
+create_correlation_plot(
+  cor_matrix,
+  title = "Correlation Matrix of Car Features",
+  method = "circle",
+  type = "upper"
+)
+```
+
+## Key Findings
+
+::: {.incremental}
+- Strong negative correlation between MPG and weight
+- Strong positive correlation between displacement and horsepower
+- Manual transmission cars generally have better fuel efficiency
+- Cars with fewer cylinders tend to be more fuel-efficient
+:::
+
+# Sequential and Diverging Color Palettes
+
+## Sequential Color Palettes
+
+```{r fig.width=10, fig.height=6}
+# Create a sample dataset for heatmap
+set.seed(9104)
+data_matrix <- matrix(rnorm(100), nrow = 10)
+rownames(data_matrix) <- paste0("Row", 1:10)
+colnames(data_matrix) <- paste0("Col", 1:10)
+
+# Create a heatmap using sequential colors
+heatmap(
+  data_matrix,
+  col = cq_sequential_palette(20, palette = "blue"),
+  main = "Sample Heatmap with Sequential Colors",
+  scale = "column",
+  margins = c(5, 5)
+)
+```
+
+## Diverging Color Palettes
+
+```{r fig.width=10, fig.height=6}
+# Create a visualization using diverging colors
+cor_matrix <- cor(mtcars)
+
+# Create a correlation plot using cqThemes with diverging palette
+create_correlation_plot(
+  cor_matrix,
+  title = "Correlation Matrix with Diverging Colors",
+  colors = cq_diverging_palette(20, palette = "blue-red"),
+  method = "square",
+  type = "lower"
+)
+```
+
+# Conclusion
+
+## Summary
+
+::: {.incremental}
+- The `cqThemes` package provides consistent styling for your presentations
+- Key features:
+  - Professional design for statistical visualizations
+  - Coordinated color palettes for different data types
+  - Presentation-optimized tables and charts
+  - Easy to use with Quarto or R Markdown
+:::
+
+## Next Steps
+
+::: {.incremental}
+- Install the `cqThemes` package
+- Use the RevealJS template for your presentations
+- Customize the theme to match your organization's branding
+- Explore other output formats: PDF and HTML
+:::
+
+## Thank You!
+
+::: {.nonincremental}
+- Package documentation: [cqThemes Documentation](https://example.com)
+- Source code: [GitHub Repository](https://github.com/username/cqThemes)
+- Contact: your.email@example.com
+:::
+
+```{scss custom, echo=FALSE}
+/*-- scss:defaults --*/
+$presentation-heading-color: #2c3e50;
+$link-color: #5ab4ac;
+$presentation-heading-font: "Source Sans Pro", Helvetica, sans-serif;
+$presentation-font-size-root: 28px;
+$code-block-bg: #f8f8f8;
+
+/*-- scss:rules --*/
+.reveal h1 {
+  border-bottom: 2px solid #5ab4ac;
+  padding-bottom: 0.2em;
+}
+
+.reveal h2 {
+  color: #5ab4ac;
+}
+
+.reveal .footer {
+  font-size: 0.5em;
+  color: #777;
+}
+
+.reveal table {
+  font-size: 0.8em;
+}
+
+.reveal pre code {
+  padding: 15px;
+  border-radius: 5px;
+}
+
+.reveal .sourceCode {
+  margin-top: 15px;
+  margin-bottom: 15px;
+}
+```
+width=10, fig.height=6}
+# Create a scatterplot with the cqThemes revealjs theme
+ggplot(mtcars, aes(x = mpg, y = hp, color = factor(cyl), size = wt)) +
+  geom_point(alpha = 0.8) +
+  labs(
+    title = "MPG vs. Horsepower",
+    x = "Miles per Gallon",
+    y = "Horsepower",
+    color = "Cylinders",
+    size = "Weight"
+  ) +
+  theme_cq_revealjs() +
+  scale_color_manual(values = cq_colors(3, type = "categorical"))
+```
+
+## Distribution of MPG by Cylinders
+
+```{r fig.

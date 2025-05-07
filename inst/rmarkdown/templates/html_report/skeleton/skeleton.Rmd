@@ -1,0 +1,269 @@
+---
+title: "Interactive Statistical Report with cqThemes"
+subtitle: "Created with the cqThemes Package"
+author: "Your Name"
+date: "`r Sys.Date()`"
+output:
+  html_document:
+    toc: true
+    toc_float: true
+    toc_depth: 3
+    number_sections: true
+    theme: cosmo
+    highlight: tango
+    code_folding: hide
+    df_print: paged
+---
+
+```{r setup, include=FALSE}
+# Load the cqThemes package
+library(cqThemes)
+
+# Apply the HTML theme with interactive plots
+use_html_theme(seed = 9104, interactive = TRUE)
+
+# Load additional packages for the demo
+library(ggplot2)
+library(dplyr)
+library(plotly)
+```
+
+# Introduction {#introduction}
+
+This is a template for creating interactive statistical reports with the `cqThemes` package. It provides consistent formatting, color palettes, and styling functions to create professional-looking HTML documents with interactive elements.
+
+## Purpose of This Report {#purpose}
+
+This template demonstrates the interactive features of the `cqThemes` HTML theme:
+
+- Consistent plot themes with `theme_cq_html()`
+- Interactive tables with `format_table_html()`
+- Interactive plots using plotly integration
+- Coordinated color palettes with `cq_colors()`
+
+## Data Sources {#data-sources}
+
+This template uses example datasets included in R:
+
+- `mtcars`: Motor Trend Car Road Tests
+- `diamonds`: Diamond prices and characteristics (from ggplot2)
+
+# Interactive Data Analysis {#data-analysis}
+
+## Data Overview {#data-overview}
+
+Let's start with an interactive table of the dataset:
+
+```{r table-overview}
+# Format interactive table with cqThemes
+format_table_html(
+  head(mtcars, 10),
+  caption = "Sample of the Motor Trend Car Dataset",
+  digits = 2,
+  highlight_row = c(3, 6),
+  compact = TRUE,
+  buttons = c("copy", "csv")
+)
+```
+
+## Interactive Visualizations {#visualizations}
+
+The cqThemes HTML theme automatically converts ggplot2 visualizations to interactive plotly charts:
+
+```{r scatter-plot}
+# Create a scatterplot with the cqThemes HTML theme
+# This will be automatically converted to an interactive plotly chart
+ggplot(mtcars, aes(x = mpg, y = hp, color = factor(cyl), size = wt)) +
+  geom_point(alpha = 0.8) +
+  labs(
+    title = "MPG vs. Horsepower",
+    subtitle = "By Number of Cylinders and Weight",
+    x = "Miles per Gallon",
+    y = "Horsepower",
+    color = "Cylinders",
+    size = "Weight (1000 lbs)"
+  ) +
+  theme_cq_html() +
+  scale_color_manual(values = cq_colors(3, type = "categorical"))
+```
+
+*Hover over the points to see detailed information*
+
+## Exploring Distributions {#distributions}
+
+Let's create an interactive boxplot:
+
+```{r box-plot}
+# Create a boxplot with the cqThemes HTML theme
+ggplot(mtcars, aes(x = factor(cyl), y = mpg, fill = factor(cyl))) +
+  geom_boxplot(alpha = 0.7) +
+  labs(
+    title = "Distribution of MPG by Cylinder Count",
+    x = "Number of Cylinders",
+    y = "Miles per Gallon"
+  ) +
+  theme_cq_html() +
+  scale_fill_manual(values = cq_colors(3, type = "categorical")) +
+  theme(legend.position = "none")
+```
+
+*Click and drag to zoom in, double-click to reset the view*
+
+## Interactive Exploration Tool {#exploration-tool}
+
+```{r diamonds-explorer}
+# Create a sample of the diamonds dataset
+set.seed(9104)
+diamonds_sample <- diamonds[sample(nrow(diamonds), 1000), ]
+
+# Create an interactive plot with multiple variables
+p <- ggplot(diamonds_sample, aes(x = carat, y = price, color = cut)) +
+  geom_point(alpha = 0.7) +
+  facet_wrap(~ color) +
+  labs(
+    title = "Diamond Price by Carat",
+    subtitle = "Faceted by Color, Colored by Cut",
+    x = "Carat",
+    y = "Price (USD)"
+  ) +
+  theme_cq_html() +
+  scale_color_manual(values = cq_sequential_palette(5, palette = "blue"))
+
+# In an actual document, this would automatically be converted to plotly
+# Here we'll do it explicitly for demonstration
+ggplotly(p) %>%
+  layout(
+    margin = list(l = 50, r = 50, b = 100, t = 100, pad = 4),
+    font = list(family = "Helvetica Neue, Arial, sans-serif"),
+    paper_bgcolor = 'rgba(0,0,0,0)',
+    plot_bgcolor = 'rgba(0,0,0,0)'
+  ) %>%
+  config(
+    displayModeBar = TRUE,
+    displaylogo = FALSE
+  )
+```
+
+*Try using the interactive tools in the toolbar to explore the data*
+
+## Statistical Analysis {#statistical-analysis}
+
+Let's examine the relationship between variables with an interactive correlation plot:
+
+```{r correlation-matrix}
+# Create a correlation matrix
+cor_matrix <- cor(mtcars[, c("mpg", "disp", "hp", "drat", "wt", "qsec")])
+
+# Create a correlation plot using cqThemes
+create_correlation_plot(
+  cor_matrix,
+  title = "Correlation Matrix of Car Features"
+)
+```
+
+*Note: The correlation plot is static for better readability, but you can still interact with it using the toolbar*
+
+## Custom Interactive Visualization {#custom-viz}
+
+Let's create a custom interactive visualization:
+
+```{r custom-viz}
+# Prepare data for visualization
+car_summary <- mtcars %>%
+  group_by(am, cyl) %>%
+  summarize(
+    count = n(),
+    avg_mpg = mean(mpg),
+    avg_hp = mean(hp),
+    avg_wt = mean(wt),
+    .groups = "drop"
+  ) %>%
+  mutate(
+    am = factor(am, labels = c("Automatic", "Manual")),
+    cyl = factor(cyl)
+  )
+
+# Create an interactive bar chart
+p <- ggplot(car_summary, aes(x = cyl, y = avg_mpg, fill = am)) +
+  geom_bar(stat = "identity", position = "dodge", alpha = 0.8) +
+  geom_text(
+    aes(label = round(avg_mpg, 1)),
+    position = position_dodge(width = 0.9),
+    vjust = -0.5,
+    size = 3.5
+  ) +
+  labs(
+    title = "Average MPG by Cylinder Count and Transmission Type",
+    x = "Number of Cylinders",
+    y = "Average Miles per Gallon",
+    fill = "Transmission"
+  ) +
+  theme_cq_html() +
+  scale_fill_manual(values = cq_colors(2))
+
+# In an actual document, this would automatically be converted to plotly
+# Here we'll do it explicitly for demonstration
+ggplotly(p) %>%
+  layout(
+    margin = list(l = 50, r = 50, b = 100, t = 100, pad = 4),
+    font = list(family = "Helvetica Neue, Arial, sans-serif")
+  )
+```
+
+*Hover over the bars to see exact values*
+
+# Conclusion {#conclusion}
+
+This template has demonstrated the key features of the `cqThemes` HTML theme for creating interactive statistical reports:
+
+1. **Interactive tables** with search, pagination, and export options
+2. **Interactive plots** that allow exploration through zooming, panning, and hovering
+3. **Consistent styling** across all visualizations
+4. **Coordinated color palettes** for different types of data
+
+## Next Steps {#next-steps}
+
+To use this template for your own reports:
+
+1. Replace the example data with your own dataset
+2. Customize the visualizations as needed
+3. Update the text and analysis to match your data
+
+For more information, refer to the `cqThemes` package documentation and vignettes.
+
+```{r echo=FALSE}
+# Add some CSS for better styling
+htmltools::tags$style(
+  "body {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 15px;
+    font-family: 'Helvetica Neue', Arial, sans-serif;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    color: #2c3e50;
+  }
+  
+  h1 {
+    border-bottom: 2px solid #5ab4ac;
+    padding-bottom: 10px;
+  }
+  
+  .caption {
+    font-style: italic;
+    font-size: 0.9em;
+    color: #666;
+    margin-top: 5px;
+    text-align: center;
+  }
+  
+  .plot-container {
+    margin: 20px 0;
+    padding: 10px;
+    border: 1px solid #eaeaea;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  }
+  "
+)
+```

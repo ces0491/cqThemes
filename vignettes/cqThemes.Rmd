@@ -1,0 +1,360 @@
+---
+title: "cqThemes: Ces Quarto Themes - Consistent Styling for Statistical Reports and Presentations"
+author: "Cesaire Tobias"
+date: "`r Sys.Date()`"
+output: 
+  html_document:
+    toc: true
+    toc_depth: 3
+    toc_float: true
+    theme: cosmo
+    highlight: tango
+vignette: >
+  %\VignetteIndexEntry{cqThemes: Consistent Styling for Statistical Reports and Presentations}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.width = 8,
+  fig.height = 6,
+  fig.align = "center",
+  dpi = 120
+)
+```
+
+# Introduction
+
+The `cqThemes` package provides consistent styling for statistical reports and presentations created with Quarto or R Markdown. It includes themes for three different output formats:
+
+1. **PDF Reports** - Professional styling for academic and business reports
+2. **HTML Documents** - Interactive web-based documents with responsive design
+3. **RevealJS Presentations** - Slide decks with consistent branding
+
+Each theme comes with coordinated color palettes, typography, and spacing to ensure a professional and consistent look across all your documents.
+
+## Installation
+
+You can install the package from GitHub:
+
+```{r eval=FALSE}
+# Install devtools if you don't have it
+# install.packages("devtools")
+
+# Install cqThemes from GitHub
+devtools::install_github("ces0491/cqThemes")
+```
+
+# PDF Report Styling
+
+For PDF reports, the package provides a clean, professional theme with typography and spacing optimized for readability.
+
+## Basic Usage
+
+To apply the PDF theme to your Quarto or R Markdown document, simply load the package and call the `use_pdf_theme()` function in your setup chunk:
+
+```{r eval=FALSE}
+library(cqThemes)
+use_pdf_theme()
+```
+
+This sets up all the necessary styling for your document.
+
+## Plot Styling
+
+The `theme_cq_pdf()` function provides a consistent theme for ggplot2 visualizations in PDF documents:
+
+```{r}
+library(cqThemes)
+library(ggplot2)
+
+# Create a sample dataset
+set.seed(9104)
+df <- data.frame(
+  x = rnorm(100),
+  y = rnorm(100),
+  group = factor(sample(1:3, 100, replace = TRUE))
+)
+
+# Create a plot with the PDF theme
+ggplot(df, aes(x = x, y = y, color = group)) +
+  geom_point(size = 3, alpha = 0.7) +
+  labs(
+    title = "Sample Scatterplot with PDF Theme",
+    subtitle = "Demonstrating cqThemes styling",
+    x = "X Variable",
+    y = "Y Variable"
+  ) +
+  theme_cq_pdf() +
+  scale_color_manual(values = cq_colors(3, type = "categorical"))
+```
+
+## Table Formatting
+
+For tables in PDF documents, use the `format_table_pdf()` function:
+
+```{r}
+# Load example data
+data(mtcars)
+
+# Format a table for PDF output
+format_table_pdf(
+  head(mtcars[, 1:5]),
+  caption = "Sample Table with PDF Formatting",
+  digits = 2,
+  highlight_row = 3,
+  font_size = 10
+)
+```
+
+# HTML Document Styling
+
+For HTML documents, the package provides a responsive theme with interactive elements.
+
+## Basic Usage
+
+To apply the HTML theme to your document, call the `use_html_theme()` function:
+
+```{r eval=FALSE}
+library(cqThemes)
+use_html_theme(interactive = TRUE)
+```
+
+This sets up all the necessary styling and enables interactive plots.
+
+## Interactive Plots
+
+The HTML theme automatically converts ggplot2 visualizations to interactive plotly charts:
+
+```{r}
+# Create a plot with the HTML theme
+p <- ggplot(df, aes(x = x, y = y, color = group)) +
+  geom_point(size = 3, alpha = 0.7) +
+  labs(
+    title = "Interactive Scatterplot with HTML Theme",
+    subtitle = "Hover over points for more information",
+    x = "X Variable",
+    y = "Y Variable"
+  ) +
+  theme_cq_html() +
+  scale_color_manual(values = cq_colors(3, type = "categorical"))
+
+# In an actual HTML document, this would be converted to an interactive plotly chart
+# Here we'll just show the static version
+p
+```
+
+## Interactive Tables
+
+For interactive tables in HTML documents, use the `format_table_html()` function:
+
+```{r}
+# Load example data
+data(mtcars)
+
+# Format a table for HTML output
+if (requireNamespace("DT", quietly = TRUE)) {
+  format_table_html(
+    head(mtcars),
+    caption = "Sample Interactive Table",
+    digits = 2,
+    buttons = c("copy", "csv"),
+    compact = TRUE
+  )
+} else {
+  knitr::kable(head(mtcars), caption = "Sample Table (DT package not available)")
+}
+```
+
+# RevealJS Presentation Styling
+
+For presentations, the package provides a clean, minimalist theme with larger text and simplified elements.
+
+## Basic Usage
+
+To apply the RevealJS theme to your presentation, call the `use_revealjs_theme()` function:
+
+```{r eval=FALSE}
+library(cqThemes)
+use_revealjs_theme()
+```
+
+## Presentation Plots
+
+The `theme_cq_revealjs()` function provides a theme optimized for presentations:
+
+```{r}
+# Create a plot with the RevealJS theme
+ggplot(df, aes(x = x, y = y, color = group)) +
+  geom_point(size = 4, alpha = 0.8) +
+  labs(
+    title = "Presentation Plot with RevealJS Theme",
+    x = "X Variable",
+    y = "Y Variable"
+  ) +
+  theme_cq_revealjs() +
+  scale_color_manual(values = cq_colors(3, type = "categorical"))
+```
+
+## Presentation Tables
+
+For tables in presentations, use the `format_table_reveal()` function:
+
+```{r}
+# Format a table for RevealJS presentations
+format_table_reveal(
+  head(mtcars[, 1:5], 5),
+  caption = "Sample Table for Presentations",
+  digits = 1,
+  highlight_row = 2
+)
+```
+
+# Color Palettes
+
+The package provides several color palette functions to ensure consistent coloring across all visualizations.
+
+## Default Colors
+
+The `cq_colors()` function provides the default color palette:
+
+```{r}
+# Display the default color palette
+par(mar = c(2, 1, 2, 1))
+barplot(
+  rep(1, 10),
+  col = cq_colors(10, type = "categorical"),
+  main = "Default Categorical Color Palette",
+  horiz = TRUE,
+  axes = FALSE
+)
+text(0.5, 1:10 - 0.5, paste("Color", 1:10), pos = 4)
+```
+
+## Sequential and Diverging Palettes
+
+For ordered data, use the sequential and diverging palettes:
+
+```{r}
+# Display sequential color palettes
+par(mfrow = c(2, 2), mar = c(2, 1, 2, 1))
+
+# Blue sequential
+barplot(
+  rep(1, 7),
+  col = cq_sequential_palette(7, palette = "blue"),
+  main = "Blue Sequential",
+  horiz = TRUE,
+  axes = FALSE
+)
+
+# Green sequential
+barplot(
+  rep(1, 7),
+  col = cq_sequential_palette(7, palette = "green"),
+  main = "Green Sequential",
+  horiz = TRUE,
+  axes = FALSE
+)
+
+# Teal-Brown diverging
+barplot(
+  rep(1, 7),
+  col = cq_diverging_palette(7, palette = "teal-brown"),
+  main = "Teal-Brown Diverging",
+  horiz = TRUE,
+  axes = FALSE
+)
+
+# Blue-Red diverging
+barplot(
+  rep(1, 7),
+  col = cq_diverging_palette(7, palette = "blue-red"),
+  main = "Blue-Red Diverging",
+  horiz = TRUE,
+  axes = FALSE
+)
+```
+
+# Additional Utilities
+
+The package includes several utility functions to help with common tasks.
+
+## Correlation Plots
+
+The `create_correlation_plot()` function creates consistently styled correlation plots:
+
+```{r}
+# Create a correlation matrix
+cor_matrix <- cor(mtcars[, 1:5])
+
+# Create a correlation plot
+create_correlation_plot(
+  cor_matrix,
+  title = "Correlation Matrix of Car Features",
+  colors = colorRampPalette(cq_colors(2, type = "main"))(200)
+)
+```
+
+## Saving Plots
+
+Use the `save_plot()` function to save plots with consistent settings:
+
+```{r eval=FALSE}
+# Create a plot
+p <- ggplot(mtcars, aes(x = mpg, y = hp)) +
+  geom_point() +
+  labs(title = "Horsepower vs MPG") +
+  theme_cq_pdf()
+
+# Save the plot
+save_plot(p, "my_plot.png", width = 8, height = 6, dpi = 300)
+```
+
+# Templates
+
+The package includes document templates for all three output formats. You can access these templates from RStudio:
+
+1. File → New File → R Markdown... → From Template
+2. Select one of the cqThemes templates:
+   - cqThemes PDF Report
+   - cqThemes HTML Document
+   - cqThemes RevealJS Presentation
+
+# FAQ and Troubleshooting
+
+## Common Issues
+
+### Missing Packages
+
+If you see an error about missing packages, use the `ensure_packages()` function:
+
+```{r eval=FALSE}
+cqThemes::ensure_packages(c("ggplot2", "plotly", "DT", "kableExtra"))
+```
+
+### Theme Not Applied
+
+Make sure you're calling the appropriate theme function at the beginning of your document:
+
+```{r eval=FALSE}
+# For PDF:
+use_pdf_theme()
+
+# For HTML:
+use_html_theme()
+
+# For RevealJS:
+use_revealjs_theme()
+```
+
+## Contact
+
+For bug reports or feature requests, please file an issue on GitHub: [https://github.com/username/cqThemes/issues](https://github.com/username/cqThemes/issues)
+
+# Conclusion
+
+The `cqThemes` package provides a consistent styling system for statistical reports and presentations. By using the provided themes, color palettes, and formatting functions, you can create professional, visually appealing documents with minimal effort.
